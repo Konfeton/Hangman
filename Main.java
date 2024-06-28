@@ -119,29 +119,30 @@ public class Main {
     private static char inputLetterAndValidate() {
         System.out.println("Введите букву русского алфавита");
         while (true) {
-            String symbol = scanner.nextLine();
-            if (isSymbolCorrect(symbol)) {
-                return symbol.toLowerCase().charAt(0);
+            String line = scanner.nextLine();
+            if (isSymbolCorrect(line)) {
+                char letter = line.toLowerCase().charAt(0);
+                return letter;
             } else {
                 System.out.println("Введено неверное значение! Попробуйте ещё раз");
             }
         }
     }
 
-    private static boolean isSymbolCorrect(String symbol) {
-        return (isNotOneCharacter(symbol) && isLetter(symbol) && isCyrillic(symbol));
+    private static boolean isSymbolCorrect(String text) {
+        return (isOneCharacter(text) && isLetter(text) && isCyrillic(text));
     }
 
-    private static boolean isNotOneCharacter(String symbol) {
-        return symbol.length() == 1;
+    private static boolean isOneCharacter(String text) {
+        return text.length() == 1;
     }
 
-    private static boolean isLetter(String symbol) {
-        return Character.isLetter(symbol.charAt(0));
+    private static boolean isLetter(String text) {
+        return Character.isLetter(text.charAt(0));
     }
 
-    private static boolean isCyrillic(String symbol) {
-        return symbol.matches("([а-яА-я])");
+    private static boolean isCyrillic(String text) {
+        return text.matches("([а-яА-я])");
     }
 
 
