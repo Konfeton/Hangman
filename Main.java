@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -94,8 +96,9 @@ public class Main {
     private static String getRandomWord() {
         if (words.isEmpty()) {
             try {
-                words = Files.readAllLines(Path.of(FILE_PATH));
-            } catch (IOException e) {
+                URL url = Main.class.getResource(FILE_PATH);
+                words = Files.readAllLines(Path.of(url.toURI()));
+            } catch (IOException | URISyntaxException e) {
                 throw new RuntimeException(e);
             }
         }
