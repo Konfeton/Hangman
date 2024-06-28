@@ -21,7 +21,7 @@ public class Main {
     public static final String GAME_STATE_LOOSE = "YOU LOOSE";
     public static final String GAME_STATE_CONTINUE = "";
 
-    public static final int MAX_NUMBER_OF_MISTAKES = 5;
+    public static final int MAX_NUMBER_OF_MISTAKES = 6;
 
     public static void main(String[] args) {
         startGame();
@@ -71,6 +71,7 @@ public class Main {
 
             String gameState = checkGameState(numberOfMistakes, word, guesses);
 
+            showGallows(numberOfMistakes);
 
             if (gameState.equals(GAME_STATE_WIN)) {
                 System.out.println(gameState);
@@ -85,9 +86,7 @@ public class Main {
                 break;
             }
 
-            if (numberOfMistakes > 0) {
-                showGallows(numberOfMistakes);
-            }
+
 
             showMask(word, guesses);
             System.out.println("Введённые буквы: " + guesses);
@@ -105,7 +104,8 @@ public class Main {
                 throw new RuntimeException(e);
             }
         }
-        return words.get(random.nextInt(words.size()));
+        int randomWordIndex = random.nextInt(words.size());
+        return words.get(randomWordIndex);
     }
 
     private static void showMask(String word, Set<Character> guesses) {
@@ -175,11 +175,43 @@ public class Main {
     }
 
     private static void showGallows(int numberOfMistakes) {
-        System.out.println(numberOfMistakes > 0 ? "|----------" : "|----------");
-        System.out.println(numberOfMistakes > 1 ? "|       |  " : "|");
-        System.out.println(numberOfMistakes > 2 ? "|       0  " : "|");
-        System.out.println(numberOfMistakes > 3 ? "|      /|\\" : "|");
-        System.out.println(numberOfMistakes > 4 ? "|      / \\" : "|");
-        System.out.println();
+        String[] pictures = new String[numberOfMistakes];
+        pictures[0] = "|----------\n" +
+                      "|          \n" +
+                      "|          \n" +
+                      "|          \n" +
+                      "|            ";
+        pictures[1] = "|----------\n" +
+                      "|       |  \n" +
+                      "|       0  \n" +
+                      "|          \n" +
+                      "|            ";
+        pictures[2] = "|----------\n" +
+                      "|       |  \n" +
+                      "|       0  \n" +
+                      "|      /   \n" +
+                      "|            ";
+        pictures[3] = "|----------\n" +
+                      "|       |  \n" +
+                      "|       0  \n" +
+                      "|      /|  \n" +
+                      "|            ";
+        pictures[4] = "|----------\n" +
+                      "|       |  \n" +
+                      "|       0  \n" +
+                      "|      /|\\\n" +
+                      "|            ";
+        pictures[5] = "|----------\n" +
+                      "|       |  \n" +
+                      "|       0  \n" +
+                      "|      /|\\\n" +
+                      "|      /     ";
+        pictures[6] = "|----------\n" +
+                      "|       |  \n" +
+                      "|       0  \n" +
+                      "|      /|\\\n" +
+                      "|      / \\  ";
+
+        System.out.println(pictures[numberOfMistakes]);
     }
 }
