@@ -19,9 +19,9 @@ public class Main {
 
     public static final String GAME_STATE_WIN = "YOU WIN";
     public static final String GAME_STATE_LOOSE = "YOU LOOSE";
-    public static final String GAME_STATE_CONTINUE = "";
 
     public static final int MAX_NUMBER_OF_MISTAKES = 6;
+    public static final int NUMBER_OF_PICTURES = MAX_NUMBER_OF_MISTAKES + 1;
 
     public static void main(String[] args) {
         startGame();
@@ -49,10 +49,10 @@ public class Main {
     private static void startGameRound() {
         String word = getRandomWord();
         Set<Character> guesses = new LinkedHashSet<>();
-
-        showMask(word, guesses);
-
         int numberOfMistakes = 0;
+
+        showGallows(numberOfMistakes);
+        showMask(word, guesses);
 
         do {
             char letter = inputLetter();
@@ -69,24 +69,19 @@ public class Main {
                 numberOfMistakes++;
             }
 
-            String gameState = checkGameState(numberOfMistakes, word, guesses);
-
             showGallows(numberOfMistakes);
 
-            if (gameState.equals(GAME_STATE_WIN)) {
-                System.out.println(gameState);
+            if (isWin(word, guesses)) {
+                System.out.println(GAME_STATE_WIN);
                 System.out.println("Загаданое слово: " + word);
                 break;
             }
 
-            if (gameState.equals(GAME_STATE_LOOSE)) {
-                showGallows(numberOfMistakes);
-                System.out.println(gameState);
+            if (isLoose(numberOfMistakes)) {
+                System.out.println(GAME_STATE_LOOSE);
                 System.out.println("Загаданое слово: " + word);
                 break;
             }
-
-
 
             showMask(word, guesses);
             System.out.println("Введённые буквы: " + guesses);
@@ -157,25 +152,8 @@ public class Main {
         return word.indexOf(letter) != -1;
     }
 
-    private static String checkGameState(int numberOfMistakes, String word, Set<Character> guesses) {
-        if (numberOfMistakes == MAX_NUMBER_OF_MISTAKES) {
-            return GAME_STATE_LOOSE;
-        } else {
-            int numberOfCorrectLetters = 0;
-            for (int i = 0; i < word.length(); i++) {
-                if (guesses.contains(word.charAt(i))) {
-                    numberOfCorrectLetters++;
-                }
-            }
-            if (numberOfCorrectLetters == word.length()) {
-                return GAME_STATE_WIN;
-            }
-        }
-        return GAME_STATE_CONTINUE;
-    }
-
     private static void showGallows(int numberOfMistakes) {
-        String[] pictures = new String[numberOfMistakes];
+        String[] pictures = new String[NUMBER_OF_PICTURES];
         pictures[0] = "|----------\n" +
                       "|          \n" +
                       "|          \n" +
@@ -213,5 +191,19 @@ public class Main {
                       "|      / \\  ";
 
         System.out.println(pictures[numberOfMistakes]);
+    }
+
+    private static boolean isWin(String word, Set<Character> guesses) {
+        int numberOfCorrectLetters = 0;
+        for (int i = 0; i < word.length(); i++) {
+            if (guesses.contains(word.charAt(i))) {
+                numberOfCorrectLetters++;
+            }
+        }
+        return numberOfCorrectLetters == word.length();
+    }
+
+    private static boolean isLoose(int numberOfMistakes) {
+        return numberOfMistakes == MAX_NUMBER_OF_MISTAKES;
     }
 }
