@@ -14,6 +14,9 @@ public class Main {
 
     public static final String FILE_PATH = "words.txt";
 
+    public static final String COMMAND_PLAY = "1";
+    public static final String COMMAND_EXIT = "2";
+
     public static final String GAME_STATE_WIN = "YOU WIN";
     public static final String GAME_STATE_LOOSE = "YOU LOOSE";
     public static final String GAME_STATE_CONTINUE = "";
@@ -21,21 +24,21 @@ public class Main {
     public static final int MAX_NUMBER_OF_MISTAKES = 5;
 
     public static void main(String[] args) {
-        showAndHandleMenu();
+        startGame();
     }
 
-    private static void showAndHandleMenu() {
+    private static void startGame() {
         while (true) {
             System.out.println("Выберите из списка:");
-            System.out.println("1) Начать новую игру");
-            System.out.println("2) Выйти");
+            System.out.println(COMMAND_PLAY + ") Начать новую игру");
+            System.out.println(COMMAND_EXIT + ") Выйти");
             System.out.print("Выбор: ");
             String choice = scanner.nextLine();
             switch (choice) {
-                case "1":
-                    startGame();
+                case COMMAND_PLAY:
+                    startGameRound();
                     break;
-                case "2":
+                case COMMAND_EXIT:
                     return;
                 default:
                     System.out.println("Ошибка! Введено неверное значение");
@@ -43,7 +46,7 @@ public class Main {
         }
     }
 
-    private static void startGame() {
+    private static void startGameRound() {
         String word = getRandomWord();
         Set<Character> guesses = new LinkedHashSet<>();
 
@@ -52,7 +55,7 @@ public class Main {
         int numberOfMistakes = 0;
 
         do {
-            char letter = inputLetterAndValidate();
+            char letter = inputLetter();
 
             if (isLetterWasAlreadyGuessed(guesses, letter)) {
                 System.out.println("Вы уже вводили такую букву");
@@ -116,7 +119,7 @@ public class Main {
         System.out.println();
     }
 
-    private static char inputLetterAndValidate() {
+    private static char inputLetter() {
         System.out.println("Введите букву русского алфавита");
         while (true) {
             String line = scanner.nextLine();
