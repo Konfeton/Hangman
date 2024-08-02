@@ -1,31 +1,22 @@
 package src;
 
-import src.reader.FileReader;
-import src.reader.Reader;
-
 import java.util.List;
 import java.util.Random;
 
 public class Dictionary {
-
     private List<String> words;
-    private Reader reader;
+    private FileReader reader = new FileReader();
 
-    private String filePath = "../words.txt";
-
-    public Dictionary() {
-        reader = new FileReader();
-        setWords();
+    public Dictionary(String fileName) {
+        loadWords(fileName);
+    }
+    
+    private void loadWords(String fileName) {
+        List<String> wordsFromFile = reader.read(fileName);
+        words = wordsFromFile;
     }
 
     public String getRandomWord(){
-        Random random = new Random();
-        int randomWordIndex = random.nextInt(words.size());
-        return words.get(randomWordIndex);
+        return words.get(new Random().nextInt(words.size()));
     }
-
-    private void setWords(){
-        words = reader.read(filePath);
-    }
-
 }

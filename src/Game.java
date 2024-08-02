@@ -1,104 +1,84 @@
 package src;
 
-import src.printer.ConsolePrinter;
-import src.printer.Printer;
-
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Scanner;
 import java.util.Set;
 
 public class Game {
-    private final Scanner scanner;
-    private Dictionary dictionary;
-    private Printer printer;
-    private final InputHandler inputHandler;
 
-    private static final String COMMAND_PLAY = "1";
-    private static final String COMMAND_EXIT = "2";
+    private final MaskedWord maskedWord;
+    private final Scanner scanner = new Scanner(System.in);
 
-    public static final int MAX_NUMBER_OF_MISTAKES = 6;
+    private static final int MAX_NUMBER_OF_MISTAKES = 6;
+    private Set<Character> guesses;
+    private Set<Character> mistakes;
+    private GameState gameState;
 
-    public Game() {
-        scanner = new Scanner(System.in);
-        dictionary = new Dictionary();
-        printer = new ConsolePrinter();
-        inputHandler = new InputHandler();
+    public Game(String word){
+        maskedWord = new MaskedWord(word);
+        guesses = new LinkedHashSet<>();
+        mistakes = new HashSet<>();
     }
 
-    public void startGame() {
-        while (true) {
-            System.out.println("Выберите из списка:");
-            System.out.println(COMMAND_PLAY + ") Начать новую игру");
-            System.out.println(COMMAND_EXIT + ") Выйти");
-            System.out.print("Выбор: ");
-            String choice = scanner.nextLine();
-
-            switch (choice) {
-                case COMMAND_PLAY:
-                    startGameRound();
-                    break;
-                case COMMAND_EXIT:
-                    return;
-                default:
-                    System.out.println("Ошибка! Введено неверное значение");
-            }
-        }
-    }
-
-    private void startGameRound() {
-        String word = dictionary.getRandomWord();
-        Set<Character> wordCharacters = new HashSet<>();
-        for (char c : word.toCharArray()) {
-            wordCharacters.add(c);
-        }
-
-        int mistakesCounter = 0;
-
-        printer.printHangman(mistakesCounter);
-
-        Set<Character> guesses = new LinkedHashSet<>();
-        printer.printWordMask(word, guesses);
-        GameState gameState = null;
+    public void startGameRound() {
 
         do {
-            char letter = inputHandler.inputLetter();
-
-            if (isLetterWasUsed(guesses, letter)) {
-                System.out.println("Вы уже вводили эту букву");
+            System.out.println(Hangman.getPicture(mistakes.size()));
+            System.out.println("Введённые буквы: " + guesses);
+            System.out.println(maskedWord.getMask());
+            char letter = getLetterFromUser();
+            if (isLetterWasEntered(letter)) {
+                System.out.println("Вы уже вводили эту букву!");
                 continue;
             }
-            if (!isWordContainLetter(word, letter)){
-                mistakesCounter++;
+            if (!isLetterInWord(letter)){
+                mistakes.add(letter);
             }
-
-            printer.printHangman(mistakesCounter);
-            printer.printWordMask(word, guesses);
-            printer.printUsedLetters(guesses);
-
-            gameState = getGameState(mistakesCounter, wordCharacters, guesses);
-
+            gameState = getGameState();
         } while (gameState == GameState.CONTINUE);
 
-        System.out.println(gameState.getMessage());
-        System.out.println("Загаданное слово: " + word);
+        System.out.println(gameState);
+        System.out.println("Загаданое слово: " + maskedWord.getWord());
     }
 
-    private static boolean isLetterWasUsed(Set<Character> guesses, char letter) {
+    private char getLetterFromUser() {
+        String userInput;
+        do {
+            System.out.println("Введите одну букву русского алфавита");
+            userInput = scanner.nextLine().toLowerCase();
+            if (Validator.isValid(userInput)){
+                break;
+            }
+            System.out.println("Неправильный ввод!");
+        } while (true);
+        return userInput.charAt(0);
+    }
+
+    private boolean isLetterWasEntered(char letter) {
         return !guesses.add(letter);
     }
 
-    private static boolean isWordContainLetter(String word, char letter) {
-        return word.contains(String.valueOf(letter));
+    private boolean isLetterInWord(char letter) {
+        return maskedWord.openLetter(letter);
     }
 
-    private GameState getGameState(int numberOfMistakes, Set<Character> wordCharacters, Set<Character> guesses) {
-        if (numberOfMistakes == MAX_NUMBER_OF_MISTAKES) {
-            return GameState.LOST;
-        }else if (guesses.containsAll(wordCharacters)) {
-            return GameState.WIN;
+    private GameState getGameState(){
+        if (isVictory()){
+            return GameState.VICTORY;
+        } else if (isDefeat()) {
+            return GameState.DEFEAT;
         }else {
             return GameState.CONTINUE;
         }
     }
+
+    private boolean isDefeat() {
+        return mistakes.size() == MAX_NUMBER_OF_MISTAKES;
+    }
+
+    private boolean isVictory() {
+        return maskedWord.isAllLettersGuessed();
+    }
+
 }
